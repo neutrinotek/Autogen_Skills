@@ -5,8 +5,6 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-
 
 def generate_image(prompt):
     """
