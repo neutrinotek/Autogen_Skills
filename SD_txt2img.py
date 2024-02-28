@@ -1,11 +1,23 @@
 import requests
 import json
 import base64
+import uuid
+from datetime import datetime
+from pathlib import Path
+
+timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 
 def generate_image(prompt):
+    """
+    Function to generate images based on the user's query or request. Uses the Stable Diffusion API (AUTOMATIC1111)
+    to generate the requested image and saves them to disk. Use the code below anytime there is a request to create
+    an image.
+    :param prompt: A natural language description of the image to be generated.
+    :return: The filename of the saved image(s).
+    """
     # API endpoint extracted from the curl command
-    api_url = "http://localhost:7860/sdapi/v1/txt2img" ##Replace with the URL of your SD WebUI
+    api_url = "http://10.27.27.220:7860/sdapi/v1/txt2img"
 
     # Prepare the headers as in the curl command
     headers = {
@@ -30,7 +42,7 @@ def generate_image(prompt):
         "cfg_scale": 7,
         "width": 512,
         "height": 512,
-        "restore_faces": False,
+        "restore_faces": True,
         "tiling": True,
         "do_not_save_samples": False,
         "do_not_save_grid": False,
@@ -66,8 +78,9 @@ def generate_image(prompt):
 
             # Decode the base64 string
             image_bytes = base64.b64decode(encoded_image_data)
-            image_filename = '/path/to/img.png' ##Change path as needed
-            with open(image_filename, 'wb') as image_file:
+            image_filename = str(uuid.uuid4()) + '.png'
+            file_path = Path(image_filename)
+            with open(file_path, 'wb') as image_file:
                 image_file.write(image_bytes)
             print(f"Image generated from base64 and saved as {image_filename}")
             saved_files.append(str(image_filename))
@@ -77,9 +90,8 @@ def generate_image(prompt):
     else:
         print("Failed to generate image:", response.text)
 
-
 # Example usage
-prompt = "A picture of a beautiful sunset"  # Replace with your desired prompt
+prompt = " "  # Insert your desired prompt
 neg_prompt = ("bad quality, worst quality, (deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, "
               "cartoon, drawing, anime), text, cropped, out of frame")
 generate_image(prompt)
